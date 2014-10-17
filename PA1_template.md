@@ -8,7 +8,8 @@ output: html_document
 
 ##Loading and preprocessing the data
 
-```{r results="hide"}
+
+```r
 setwd("C:\\Local\\My local Documents\\Training\\Data Analytics\\Reproducible\\assignment week2")
 unzip("activity.zip")
 activity<-read.csv("activity.csv",stringsAsFactors=FALSE)
@@ -18,37 +19,65 @@ activity<-read.csv("activity.csv",stringsAsFactors=FALSE)
 NA values are ignored for now.
 
 - Histogram of the total number of steps taken each day
-```{r}
+
+```r
 #Assuming the histogram has the other variable (interval) on the x axis. if not, it would be histogram of steps taken per day?
 stepsPerDay<-aggregate(activity$steps,list(activity$date),sum)
 colnames(stepsPerDay)<-c("day","totalSteps")
 hist(stepsPerDay$totalSteps, col="red", xlab="Steps per day", breaks=10, main="Histogram of steps activity")
 ```
 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+
 - Calculate and report the mean and median total number of steps taken per day
-```{r}
+
+```r
 mean(stepsPerDay$totalSteps,na.rm=TRUE)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(stepsPerDay$totalSteps,na.rm=TRUE)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 - Make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
-```{r}
+
+```r
 stepsPerIntvl<-aggregate(activity$steps,list(activity$interval),mean ,na.rm=TRUE)
 colnames(stepsPerIntvl)<-c("interval","avgSteps")
 plot(stepsPerIntvl, type="l",col="red", main="Daily walking patterns", xlab="time of the day",ylab="Number of steps")
 ```
 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
 - Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-```{r}
+
+```r
 index<-which.max(stepsPerIntvl$average.steps)
 stepsPerIntvl[index,1]
 ```
 
+```
+## integer(0)
+```
+
 ##Inputing missing values
 - Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
-```{r}
+
+```r
 sum(is.na(activity$step))
+```
+
+```
+## [1] 2304
 ```
 
 - Devise a strategy for filling in all of the missing values in the dataset. 
@@ -57,7 +86,8 @@ sum(is.na(activity$step))
 
 - Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r}
+
+```r
 #Merge to add mean values and order again (for readability)
 activityNoNA<-merge(activity,stepsPerIntvl, by="interval")
 activityNoNA<-activityNoNA[order(activityNoNA$date,activityNoNA$interval),]
@@ -69,14 +99,30 @@ activityNoNA<-activityNoNA[c("steps","date","interval")]
 
 - Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. 
 
-```{r}
 
+```r
 stepsPerDayNoNA<-aggregate(activityNoNA$steps,list(activity$date),sum)
 colnames(stepsPerDayNoNA)<-c("day","totalSteps")
 hist(stepsPerDayNoNA$totalSteps, col="red", xlab="Steps per day", breaks=10, main="Histogram of steps activity")
+```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+
+```r
 colnames(stepsPerDayNoNA)<-c("day","totalSteps")
 mean(stepsPerDayNoNA$totalSteps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(stepsPerDayNoNA$totalSteps)
+```
+
+```
+## [1] 10766.19
 ```
 
 - Do these values differ from the estimates from the first part of the assignment?
@@ -91,7 +137,8 @@ What is the impact of imputing missing data on the estimates of the total daily 
 - Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 - Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 
-```{r}
+
+```r
 library(ggplot2)
 library(reshape2)
 activityNoNA$weekday<-weekdays(as.Date(activityNoNA$date))
@@ -105,5 +152,6 @@ stepsCast<- dcast(stepsMelt, weekend+interval~variable, sum)
   p<-p+facet_wrap(~weekend,ncol=2,scales="free")
   p<-p+ggtitle("Comparison of the walking patterns for weekdays and weekends")
   print(p)
-                       
 ```
+
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
