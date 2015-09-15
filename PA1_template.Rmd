@@ -1,7 +1,7 @@
 ---
 title: "Reproducible Research Assignment - week 2"
 author: "Francois Ragnet"
-date: "Friday, September 18, 2015"
+date: "Sunday, September 20, 2015"
 output: html_document
 ---
 
